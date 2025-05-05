@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ECNEWS Blog Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        .container {
+            text-align: center;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            max-width: 600px;
+            width: 100%;
+        }
+        h1, h2 {
+            color: #333;
+        }
+        input, button, select {
+            padding: 10px;
+            margin: 10px;
+            font-size: 16px;
+            width: calc(100% - 40px);
+            box-sizing: border-box;
+        }
+        button {
+            cursor: pointer;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .error {
+            color: red;
+            display: none;
+            margin: 10px 0;
+        }
+        .stats, .analytics, .account-creation, .recovery {
+            display: none;
+            margin-top: 20px;
+        }
+        .analytics table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        .analytics th, .analytics td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+        .analytics th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>ECNEWS Blog</h1>
+        <a href="https://ecnews.github.io/EC-NEWS-blog-6-/" target="_blank">ब्लॉग देखें</a>
+        <div id="login">
+            <h2>ब्लॉग डैशबोर्ड</h2>
+            <select id="blogPost" onchange="updatePost()">
+                <option value="">ब्लॉग पोस्ट चुनें</option>
+                <option value="post1">पोस्ट 1: पर्यावरण संरक्षण</option>
+                <option value="post2">पोस्ट 2: जलवायु परिवर्तन</option>
+                <option value="post3">पोस्ट 3: नवीकरणीय ऊर्जा</option>
+            </select>
+            <input type="password" id="password" placeholder="पासवर्ड डालें">
+            <button onclick="checkPassword()">लॉगिन</button>
+            <p><a href="#" onclick="showRecovery()">पासवर्ड भूल गए?</a></p>
+            <p><a href="#" onclick="showAnalyticsLogin()">AI एनालिटिक्स एक्सेस करें</a></p>
+            <p><a href="#" onclick="showAccountCreation()">नया अकाउंट बनाएं</a></p>
+            <p class="error" id="error">गलत ब्लॉग पोस्ट या पासवर्ड!</p>
+        </div>
+        <div class="stats" id="stats">
+            <h2 id="postTitle">ब्लॉग सांख्यिकी</h2>
+            <p>व्यूज: <span id="views">0</span></p>
+            <p>लाइक्स: <span id="likes">0</span></p>
+            <p>फॉलोअर्स: <span id="followers">0</span></p>
+            <button onclick="logout()">लॉगआउट</button>
+        </div>
+        <div class="analytics" id="analytics">
+            <h2>AI एनालिटिक्स</h2>
+            <input type="password" id="analyticsPassword" placeholder="एनालिटिक्स पासवर्ड डालें">
+            <button onclick="checkAnalyticsPassword()">एक्सेस करें</button>
+            <p class="error" id="analyticsError">गलत पासवर्ड!</p>
+            <div id="analyticsData" style="display: none;">
+                <h3>ब्लॉग ट्रेंड विश्लेषण</h3>
+                <table>
+                    <tr>
+                        <th>ब्लॉग पोस्ट</th>
+                        <th>औसत व्यूज (30 दिन)</th>
+                        <th>औसत लाइक्स (30 दिन)</th>
+                        <th>औसत फॉलोअर्स (30 दिन)</th>
+                    </tr>
+                    <tr>
+                        <td>पोस्ट 1: पर्यावरण संरक्षण</td>
+                        <td>40</td>
+                        <td>8</td>
+                        <td>5</td>
+                    </tr>
+                    <tr>
+                        <td>पोस्ट 2: जलवायु परिवर्तन</td>
+                        <td>60</td>
+                        <td>13</td>
+                        <td>7</td>
+                    </tr>
+                    <tr>
+                        <td>पोस्ट 3: नवीकरणीय ऊर्जा</td>
+                        <td>30</td>
+                        <td>6</td>
+                        <td>3</td>
+                    </tr>
+                </table>
+                <button onclick="hideAnalytics()">बंद करें</button>
+            </div>
+        </div>
+        <div class="account-creation" id="accountCreation">
+            <h2>नया अकाउंट बनाएं</h2>
+            <input type="text" id="username" placeholder="यूजरनेम">
+            <input type="email" id="accountEmail" placeholder="ईमेल">
+            <input type="password" id="accountPassword" placeholder="पासवर्ड">
+            <button onclick="createAccount()">अकाउंट बनाएं</button>
+            <p class="error" id="accountError"></p>
+            <button onclick="backToLogin()">वापस</button>
+        </div>
+        <div class="recovery" id="recovery">
+            <h2>पासवर्ड रिकवरी</h2>
+            <select id="recoveryBlogPost">
+                <option value="">ब्लॉग पोस्ट चुनें</option>
+                <option value="post1">पोस्ट 1: पर्यावरण संरक्षण</option>
+                <option value="post2">पोस्ट 2: जलवायु परिवर्तन</option>
+                <option value="post3">पोस्ट 3: नवीकरणीय ऊर्जा</option>
+            </select>
+            <input type="email" id="email" placeholder="ईमेल डालें">
+            <input type="tel" id="mobile" placeholder="मोबाइल नंबर डालें">
+            <button onclick="sendOTP()">OTP भेजें</button>
+            <input type="text" id="otp" placeholder="OTP डालें" style="display: none;">
+            <button id="verifyBtn" onclick="verifyOTP()" style="display: none;">OTP सत्यापित करें</button>
+            <input type="password" id="newPassword" placeholder="नया पासवर्ड" style="display: none;">
+            <button id="resetBtn" onclick="resetPassword()" style="display: none;">पासवर्ड रीसेट करें</button>
+            <p class="error" id="recoveryError"></p>
+            <button onclick="backToLogin()">वापस</button>
+        </div>
+    </div>
+    <script>
+        // डमी डेटा: ब्लॉग पोस्ट, पासवर्ड, और सांख्यिकी
+        const blogData = {
+            post1: {
+                title: "पोस्ट 1: पर्यावरण संरक्षण",
+                password: "Eco123",
+                views: 1200,
+                likes: 250,
+                followers: 150
+            },
+            post2: {
+                title: "पोस्ट 2: जलवायु परिवर्तन",
+                password: "Climate456",
+                views: 1800,
+                likes: 400,
+                followers: 220
+            },
+            post3: {
+                title: "पोस्ट 3: नवीकरणीय ऊर्जा",
+                password: "Energy789",
+                views: 900,
+                likes: 180,
+                followers: 100
+            }
+        };
+
+        const analyticsPassword = "Analytics@123"; // एनालिटिक्स के लिए विशेष पासवर्ड
+        let generatedOTP = null;
+        let selectedPost = null;
+
+        function updatePost() {
+            selectedPost = document.getElementById("blogPost").value;
+        }
+
+        function checkPassword() {
+            const post = document.getElementById("blogPost").value;
+            const password = document.getElementById("password").value;
+            if (post && blogData[post] && password === blogData[post].password) {
+                document.getElementById("login").style.display = "none";
+                document.getElementById("stats").style.display = "block";
+                document.getElementById("error").style.display = "none";
+                document.getElementById("postTitle").innerText = blogData[post].title;
+                document.getElementById("views").innerText = blogData[post].views;
+                document.getElementById("likes").innerText = blogData[post].likes;
+                document.getElementById("followers").innerText = blogData[post].followers;
+            } else {
+                document.getElementById("error").style.display = "block";
+            }
+        }
+
+        function logout() {
+            document.getElementById("login").style.display = "block";
+            document.getElementById("stats").style.display = "none";
+            document.getElementById("blogPost").value = "";
+            document.getElementById("password").value = "";
+            selectedPost = null;
+        }
+
+        function showAnalyticsLogin() {
+            document.getElementById("login").style.display = "none";
+            document.getElementById("analytics").style.display = "block";
+        }
+
+        function checkAnalyticsPassword() {
+            const password = document.getElementById("analyticsPassword").value;
+            if (password === analyticsPassword) {
+                document.getElementById("analyticsData").style.display = "block";
+                document.getElementById("analyticsPassword").style.display = "none";
+                document.getElementById("analyticsError").style.display = "none";
+            } else {
+                document.getElementById("analyticsError").style.display = "block";
+            }
+        }
+
+        function hideAnalytics() {
+            document.getElementById("analytics").style.display = "none";
+            document.getElementById("login").style.display = "block";
+            document.getElementById("analyticsPassword").value = "";
+            document.getElementById("analyticsData").style.display = "none";
+            document.getElementById("analyticsPassword").style.display = "block";
+        }
+
+        function showAccountCreation() {
+            document.getElementById("login").style.display = "none";
+            document.getElementById("accountCreation").style.display = "block";
+        }
+
+        function createAccount() {
+            const username = document.getElementById("username").value;
+            const email = document.getElementById("accountEmail").value;
+            const password = document.getElementById("accountPassword").value;
+            if (username && email && password) {
+                // डमी API कॉल सिम्युलेशन
+                alert(`अकाउंट सफलतापूर्वक बनाया गया!\nयूजरनेम: ${username}\nईमेल: ${email}`);
+                backToLogin();
+            } else {
+                document.getElementById("accountError").innerText = "सभी फ़ील्ड भरें!";
+                document.getElementById("accountError").style.display = "block";
+            }
+        }
+
+        function showRecovery() {
+            document.getElementById("login").style.display = "none";
+            document.getElementById("recovery").style.display = "block";
+        }
+
+        function sendOTP() {
+            const post = document.getElementById("recoveryBlogPost").value;
+            const email = document.getElementById("email").value;
+            const mobile = document.getElementById("mobile").value;
+            if (post && email && mobile) {
+                generatedOTP = Math.floor(100000 + Math.random() * 900000).toString();
+                alert(`आपका OTP है: ${generatedOTP}`); // वास्तविक सिस्टम में OTP ईमेल/SMS से भेजा जाएगा
+                document.getElementById("otp").style.display = "block";
+                document.getElementById("verifyBtn").style.display = "block";
+                selectedPost = post;
+            } else {
+                document.getElementById("recoveryError").innerText = "ब्लॉग पोस्ट, ईमेल और मोबाइल नंबर डालें!";
+                document.getElementById("recoveryError").style.display = "block";
+            }
+        }
+
+        function verifyOTP() {
+            const otp = document.getElementById("otp").value;
+            if (otp === generatedOTP) {
+                document.getElementById("newPassword").style.display = "block";
+                document.getElementById("resetBtn").style.display = "block";
+                document.getElementById("recoveryError").style.display = "none";
+            } else {
+                document.getElementById("recoveryError").innerText = "गलत OTP!";
+                document.getElementById("recoveryError").style.display = "block";
+            }
+        }
+
+        function resetPassword() {
+            const newPassword = document.getElementById("newPassword").value;
+            if (newPassword && selectedPost) {
+                alert(`पासवर्ड सफलतापूर्वक रीसेट किया गया! नया पासवर्ड है: ${newPassword}`);
+                backToLogin();
+            } else {
+                document.getElementById("recoveryError").innerText = "नया पासवर्ड डालें!";
+                document.getElementById("recoveryError").style.display = "block";
+            }
+        }
+
+        function backToLogin() {
+            document.getElementById("login").style.display = "block";
+            document.getElementById("recovery").style.display = "none";
+            document.getElementById("accountCreation").style.display = "none";
+            document.getElementById("analytics").style.display = "none";
+            document.getElementById("recoveryBlogPost").value = "";
+            document.getElementById("email").value = "";
+            document.getElementById("mobile").value = "";
+            document.getElementById("otp").value = "";
+            document.getElementById("newPassword").value = "";
+            document.getElementById("username").value = "";
+            document.getElementById("accountEmail").value = "";
+            document.getElementById("accountPassword").value = "";
+            document.getElementById("accountError").style.display = "none";
+            document.getElementById("recoveryError").style.display = "none";
+            selectedPost = null;
+        }
+    </script>
+</body>
+</html>
